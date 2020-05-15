@@ -5,7 +5,7 @@ from django.db import models
 class Account_Info(models.Model):
     username = models.CharField(max_length=200)
     email = models.TextField()
-    password = models.TextField()
+    password = models.CharField(max_length=25)
 
     def __str__(self):
         return self.username
@@ -46,11 +46,11 @@ class Industry_Type(models.Model):
 
 class Company_Info(models.Model):
     country = models.CharField(max_length=200)
-    division = models.ForeignKey(Different_Ind_Type, on_delete=models.CASCADE)
+    division = models.ForeignKey(Division, on_delete=models.CASCADE)
     industry_type = models.OneToOneField(Industry_Type, on_delete=models.CASCADE)
     account_info = models.OneToOneField(Account_Info, on_delete=models.CASCADE)
     business_description = models.TextField()
-    trade_licence_no = models.IntegerField()
+    trade_licence_no = models.IntegerField(max_length=25)
 
     def __str__(self):
         return self.username
