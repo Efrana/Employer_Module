@@ -1,9 +1,9 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Account_Info(models.Model):
-    username = models.CharField(max_length=200)
+    username = models.OneToOneField(User,on_delete=models.CASCADE)
     email = models.TextField()
     password = models.CharField(max_length=25)
 
