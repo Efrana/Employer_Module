@@ -40,6 +40,7 @@ class IndustryType(models.Model):
 
 
 class CompanyInfo(models.Model):
+    company_name=models.CharField(max_length=200,default=None, blank=True)
     country = models.CharField(max_length=200)
     division = models.ForeignKey(Division, on_delete=models.CASCADE)
     industry_type = models.OneToOneField(IndustryType, on_delete=models.CASCADE)

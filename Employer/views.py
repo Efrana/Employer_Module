@@ -15,7 +15,6 @@ from .models import (
 )
 
 
-
 # Create your views here.
 # signup api
 @csrf_exempt
@@ -35,7 +34,6 @@ def sign_up(request):
             password=password,
         )
 
-
         # contact table
         # getting api data
         person_name = request.POST.get('person_name')
@@ -53,8 +51,9 @@ def sign_up(request):
         )
         # modifying data to json format
 
-        #company info
+        # company info
         # getting api data
+        company_name = request.get('company_name')
         country = request.POST.get('country')
         division = request.POST.get('division')
         industry_type = request.POST.get('industry_type')
@@ -63,6 +62,7 @@ def sign_up(request):
 
         # company info creation
         company_info = CompanyInfo.objects.create(
+            company_name=company_name,
             country=country,
             division=division,
             industry_type=industry_type,
@@ -70,7 +70,6 @@ def sign_up(request):
             trade_licence_no=trade_licence_no,
             user=user
         )
-
 
         # return api response
         return JsonResponse({'message': 'Employer successfully register done!'}, status=201)
