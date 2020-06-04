@@ -1,9 +1,10 @@
 from django.urls import path
 from . import views
-from Employer.views import Divisions, Employer_list,Employer_details
+from Employer.views import Divisions, Employer_list, Employer_details, Signup
 
 urlpatterns = [
     path('divisions/', Divisions),
-    path('employer/list/', Employer_list),
-    path('employer/details/', Employer_details),
+    path('list/', Employer_list),
+    path('details/<int:id>/', Employer_details),
+    path('signup/', Signup)
 ]

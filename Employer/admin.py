@@ -2,17 +2,8 @@ from django.contrib import admin
 from .models import *
 
 
-# Register your models here.
-
-# class Account_InfoAdmin(admin.ModelAdmin):
-#     list_display = ['username', 'email', 'password']
-#
-#
-# admin.site.register(Account_Info, Account_InfoAdmin)
-
-
 class ContactAdmin(admin.ModelAdmin):
-    list_display = ['person_name', 'person_designation', 'person_email', 'person_phone', 'user']
+    list_display = ['name', 'designation', 'email', 'phone', 'user']
 
 
 admin.site.register(Contact, ContactAdmin)
@@ -25,22 +16,37 @@ class DivisionAdmin(admin.ModelAdmin):
 admin.site.register(Division, DivisionAdmin)
 
 
-class DifferentIndTypeAdmin(admin.ModelAdmin):
+class DistrictAdmin(admin.ModelAdmin):
+    list_display = ['name', 'division']
+
+
+admin.site.register(District, DistrictAdmin)
+
+
+class ThanaAdmin(admin.ModelAdmin):
+    list_display = ['name', 'district']
+
+
+admin.site.register(Thana, ThanaAdmin)
+
+
+class IndustryTypeMasterAdmin(admin.ModelAdmin):
     list_display = ['name']
 
 
-admin.site.register(DifferentIndType, DifferentIndTypeAdmin)
+admin.site.register(IndustryTypeMaster, IndustryTypeMasterAdmin)
 
 
-class IndustryTypeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'different_ind_type']
+class IndustryTypeSlaveAdmin(admin.ModelAdmin):
+    list_display = ['name', 'industry_type_master']
 
 
-admin.site.register(IndustryType, IndustryTypeAdmin)
+admin.site.register(IndustryTypeSlave, IndustryTypeSlaveAdmin)
 
 
 class CompanyInfoAdmin(admin.ModelAdmin):
-    list_display = ['name','country', 'division', 'industry_type', 'user', 'business_description', 'trade_licence_no']
+    list_display = ['name','b_name' ,'country', 'thana', 'address','b_address', 'get_industry_type_slave', 'user', 'business_description',
+                    'licence_no', 'websiteurl']
 
 
 admin.site.register(CompanyInfo, CompanyInfoAdmin)
