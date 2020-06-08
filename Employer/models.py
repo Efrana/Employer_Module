@@ -4,12 +4,10 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
-
-
 class Contact(models.Model):
-    person_name = models.CharField(max_length=200)
-    person_designation = models.CharField(max_length=200)
-    person_email = models.CharField(max_length=200)
+    person_name = models.CharField(max_length=200,null=True)
+    person_designation = models.CharField(max_length=200,null=True)
+    person_email = models.CharField(max_length=200,null=True)
     person_phone = models.IntegerField()
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
@@ -40,7 +38,7 @@ class IndustryType(models.Model):
 
 
 class CompanyInfo(models.Model):
-    company_name=models.CharField(max_length=200,default=None, blank=True)
+    company_name = models.CharField(max_length=200, default=None, blank=True)
     country = models.CharField(max_length=200)
     division = models.ForeignKey(Division, on_delete=models.CASCADE)
     industry_type = models.OneToOneField(IndustryType, on_delete=models.CASCADE)
@@ -49,9 +47,6 @@ class CompanyInfo(models.Model):
     trade_licence_no = models.IntegerField()
 
     def __str__(self):
-        return self.user.username
-
-
-
+        return self.company_name
 
 

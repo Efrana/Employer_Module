@@ -7,7 +7,9 @@ from .views import *
 urlpatterns = [
 
     # sign-up api
-    path('employer/sign-up/', sign_up),
+    # path('employer/sign-up/', sign_up),
+    # path('employer/login/', login),
+    # path('employer/logout/', logout),
 
 
 
