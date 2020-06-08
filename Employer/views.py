@@ -77,3 +77,49 @@ def sign_up(request):
     # if data not available
     else:
         return JsonResponse({'message': 'Signup Failed!'}, status=404)
+
+
+# login api
+@csrf_exempt
+@require_http_methods(["POST"])
+def login(request):
+    # getting api data
+    username = request.POST.get('username')
+    password = request.POST.get('password')
+
+    # if data available
+    if username and password:
+
+        # checking
+        authenticated = authenticate(username=username, password=password)
+
+        # if authenticated user
+        if authenticated:
+
+            # if succeed
+            return JsonResponse({'authenticated': 'Login successfully done'}, status=200)
+
+        # if not succeed
+        else:
+            return JsonResponse({'message': 'Login Failed!'}, status=401)
+
+    # if data not available
+    else:
+        return JsonResponse({'message': 'Not Found!'}, status=404)
+
+# logout api
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def logout(request):
+    id = request.POST.get('id')
+    if id:
+        user =User.objects.get(id=id)
+        logout(request)
+        # user.delete()
+        return JsonResponse({'message': 'Logout Successfully!'}, status=200)
+    else:
+        return JsonResponse({'message': 'Not Found!'}, status=404)
+
+
+
