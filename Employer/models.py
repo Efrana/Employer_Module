@@ -72,6 +72,12 @@ class CompanyInfo(models.Model):
     def thana_name(self):
         return self.thana.name
 
+    def district_name(self):
+        return self.thana.district.name
+
+    def district_name(self):
+        return self.thana.district.division.name
+
     def industry_type_slave_name(self):
         return self.industry_type_slave.name
 
