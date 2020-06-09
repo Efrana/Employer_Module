@@ -14,6 +14,7 @@ from .models import (
     CompanyInfo,
     IndustryTypeMaster,
     IndustryTypeSlave,
+    Thana
 )
 from .helpers import json_body
 from .forms import UserFrom, ContactFrom, CompanyInfoFrom
@@ -38,14 +39,27 @@ class EmployerRegistration(View):
         if user_form.is_valid():
             user_instance = user_form.save()
 
+            # contact table
             contact_form = ContactFrom(body)
-            if contact_form.is_valid():
-                contact_form.instance.user = user_instance
-                contact_form_instance = contact_form.save()
-                return JsonResponse(model_to_dict(contact_form_instance, fields=[field.name for field in contact_form_instance._meta.fields]))
-                # return JsonResponse(model_to_dict(contact_form_instance, fields=self.user_fields))
-            else:
-                return JsonResponse({"errors": "failed"}, status=422)
+            contact_form.instance.user = user_instance
+            print(contact_form.instance.user)
+            contact_form_instance = contact_form.save()
+
+            # company_info table
+            company_info = CompanyInfoFrom(body)
+            print('51', company_info)
+            company_info.instance.user = user_instance
+            print('54')
+            company_info.instance.thana = Thana.objects.get(id=company_info.thana)
+            print('56', company_info.instance.thana)
+            company_info.industry_type_slave = IndustryTypeSlave.objects.get(id=company_info.industry_type_slave)
+
+            company_info.save()
+            return JsonResponse(model_to_dict(contact_form_instance,
+                                              fields=[field.name for field in contact_form_instance._meta.fields]))
+            # return JsonResponse(model_to_dict(contact_form_instance, fields=self.user_fields))
+            # else:
+            #     return JsonResponse({"errors": "failed"}, status=422)
 
         else:
             return JsonResponse({"errors": user_form.errors.as_json()}, status=422)
@@ -54,9 +68,9 @@ class EmployerRegistration(View):
         # print(contact_from)
         # if contact_from.is_valid():
         #     contact_from.instance.save(user=user_form)
-     #     return JsonResponse({'message': 'Registration Successful!'}, status=201)
-            # else:
-            #     return JsonResponse({'message': user_form.errors}, status=422)
+    #     return JsonResponse({'message': 'Registration Successful!'}, status=201)
+    # else:
+    #     return JsonResponse({'message': user_form.errors}, status=422)
 #
 # # auth user model
 # from django.contrib.auth.models import User
