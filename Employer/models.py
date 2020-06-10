@@ -3,6 +3,13 @@ from django.contrib.auth.models import User
 
 
 # Create your models here.
+class Token(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    token = models.CharField(max_length=250)
+
+    def __str__(self):
+        return str(self.token)
+
 
 class Contact(models.Model):
     name = models.CharField(max_length=200)
@@ -60,7 +67,7 @@ class CompanyInfo(models.Model):
     thana = models.ForeignKey(Thana, on_delete=models.CASCADE)
     address = models.TextField()
     b_address = models.TextField()
-    industry_type_slave = models.ManyToManyField(IndustryTypeSlave)
+    industry_type_slave = models.ManyToManyField(IndustryTypeSlave, null=True, blank=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     business_description = models.TextField()
     licence_no = models.IntegerField()

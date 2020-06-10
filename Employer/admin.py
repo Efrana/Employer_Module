@@ -8,7 +8,14 @@ from .models import (
     Division,
     District,
     Thana,
+    Token
 )
+
+
+# Toke table
+@admin.register(Token)
+class TokenAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'token']
 
 
 # Contact
@@ -23,7 +30,7 @@ class ContactAdmin(admin.ModelAdmin):
 # company info table
 @admin.register(CompanyInfo)
 class CompanyInfoAdmin(admin.ModelAdmin):
-    list_display = ['name', 'b_name', 'thana', 'address', 'business_description']
+    list_display = ['name', 'b_name', 'thana', 'address', 'business_description', 'user']
 
 
 # industry type master table
