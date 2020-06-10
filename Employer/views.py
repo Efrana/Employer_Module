@@ -1,10 +1,5 @@
-from django.contrib.auth.models import User
-from django.db import transaction
-from django.shortcuts import render
-from .models import Division, CompanyInfo, Contact, Thana, IndustryTypeSlave
+from .models import Division, CompanyInfo, Contact
 from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
-from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
 
@@ -22,6 +17,14 @@ def Divisions(request):
 def Employer_list(request):
     if request.method == "GET":
         queryset = CompanyInfo.objects.prefetch_related('industry_type_slave')
+        if request.GET.get('district'):
+            queryset = queryset.filter(thana__district=request.GET.get('district'))
+
+        if request.GET.get('division'):
+            queryset = queryset.filter(thana__district__division=request.GET.get('division'))
+
+        if request.GET.get('industrytype'):
+            queryset = queryset.filter(industry_type_slave=request.GET.get('industrytype'))
         companys = []
 
         for company in queryset:
@@ -34,7 +37,7 @@ def Employer_list(request):
                  'business_description': company.business_description, 'licence_no': company.licence_no,
                  'websiteurl': company.websiteurl})
 
-        paginator = Paginator(companys, 1)
+        paginator = Paginator(companys, 10)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
 
@@ -53,7 +56,6 @@ def Employer_list(request):
         return JsonResponse('Sorry data not exist', status=404)
 
 
-#####################################################
 # Employer details API
 def Employer_details(request, id):
     if request.method == "GET":
@@ -79,31 +81,3 @@ def Employer_details(request, id):
         return JsonResponse(context, safe=False)
     else:
         return JsonResponse('Sorry data not exist', status=404)
-
-###########################################################################################
-
-# Employer details API
-# def Employer_details(request, id):
-#     companyInfo = get_object_or_404(CompanyInfo, id=id)
-#     contacts = get_object_or_404(Contact, user=companyInfo.user)
-#     context = {
-#
-#         'id': companyInfo.id,
-#         'name': companyInfo.name,
-#         'country': companyInfo.country,
-#         'thana': companyInfo.thana.name,
-#         'district': companyInfo.thana.district.name,
-#         'division': companyInfo.thana.district.division.name,
-#         'address': companyInfo.address,
-#         'b_address': companyInfo.b_address,
-#         # 'industry_type_slave':list(companyInfo.industry_type_slave),
-#         'business_description': companyInfo.business_description,
-#         'licence_no': companyInfo.licence_no,
-#         'websiteurl': companyInfo.websiteurl,
-#         'user': companyInfo.user.username,
-#         'contacts_name': contacts.name,
-#         'designation': contacts.designation,
-#         'contacts_email': contacts.email,
-#         'contacts_phone': contacts.phone,
-#     }
-#     return JsonResponse(context, safe=False)
