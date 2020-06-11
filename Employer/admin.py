@@ -30,7 +30,7 @@ class ContactAdmin(admin.ModelAdmin):
 # company info table
 @admin.register(CompanyInfo)
 class CompanyInfoAdmin(admin.ModelAdmin):
-    list_display = ['name', 'b_name', 'thana', 'address', 'business_description', 'user']
+    list_display = ['name', 'b_name', 'thana', 'address', 'business_description', 'user', 'get_industry_type_slave']
 
 
 # industry type master table
