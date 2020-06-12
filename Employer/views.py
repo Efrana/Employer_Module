@@ -1,79 +1,129 @@
-from django.shortcuts import render
+# Django Packages
+import json
+from pprint import pprint
+
+from django.contrib.auth import authenticate, login
+from django.shortcuts import get_object_or_404
+from django.views import View
 from django.http import JsonResponse
+from django.forms.models import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import authenticate
-from django.views.decorators.http import require_http_methods
-
-# auth user model
+from django.utils.decorators import method_decorator
+from django.db import transaction
 from django.contrib.auth.models import User
+# Custom App
 from .models import (
-    CompanyInfo,
     Contact,
-    IndustryType,
-    DifferentIndType,
-    Division
+    CompanyInfo,
+    IndustryTypeMaster,
+    IndustryTypeSlave,
+    Thana,
+    Token
 )
+from .helpers import json_body
+from .forms import UserFrom, ContactFrom, CompanyInfoForm
 
 
-# Create your views here.
-# signup api
-@csrf_exempt
-@require_http_methods(["POST"])
-def sign_up(request):
-    # getting api data
-    username = request.POST.get('username')
-    email = request.POST.get('email')
-    password = request.POST.get('password')
+# =========================================Registration================================
 
-    # if data available
-    if username and email and password:
-        # user creation
-        user = User.objects.create_user(
-            username=username,
-            email=email,
-            password=password,
-        )
+# Employer Registration
+# http://127.0.0.1:8000/registration
+@method_decorator(csrf_exempt, name='dispatch')
+class EmployerRegistration(View):
+    @transaction.atomic
+    def post(self, request):
 
-        # contact table
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+
+        user_form = UserFrom(body)
+
+        if user_form.is_valid():
+            user_instance = user_form.save()
+
+            contact_form = ContactFrom(body['contact'])
+            contact_form.instance.user = user_instance
+            contact_form.save()
+
+            company_info = CompanyInfoForm(body['company_info'])
+            company_info.instance.user = user_instance
+            company_info.save()
+            return JsonResponse({'message': 'Registration Successful!'}, status=201)
+
+        else:
+            return JsonResponse({"errors": user_form.errors}, status=422)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class UpdateRegistration(View):
+    @transaction.atomic
+    def put(self, request, id=None):
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+
+        user = User.objects.get(id=id)
+        print(user)
+        user_form = UserFrom(body, instance=user)
+
+        if user_form.is_valid():
+            user_ins = user_form.save()
+
+            contact = get_object_or_404(Contact, user=user_ins)
+            contact_from = ContactFrom(body['contact'], instance=contact)
+            contact_from.save()
+
+            company_info = get_object_or_404(CompanyInfo, user=user_ins)
+            company_from = CompanyInfoForm(body['company_info'], instance=company_info)
+            company_from.save()
+            return JsonResponse({'message': 'Registration Successful Updated!'}, status=200)
+        else:
+            return JsonResponse({"errors": user_form.errors}, status=422)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class Authentication(View):
+    def post(self, request):
         # getting api data
-        person_name = request.POST.get('person_name')
-        person_designation = request.POST.get('person_designation')
-        person_email = request.POST.get('person_email')
-        person_phone = request.POST.get('person_phone')
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
 
-        # contact creation
-        contact = Contact.objects.create(
-            person_name=person_name,
-            person_designation=person_designation,
-            person_email=person_email,
-            person_phone=person_phone,
-            user=user
-        )
-        # modifying data to json format
+        user = User.objects.get(username=body['username'], password=body['password'])
+        # user = authenticate(username=user_obj.username, password=user_obj.password)
 
-        # company info
-        # getting api data
-        company_name = request.get('company_name')
-        country = request.POST.get('country')
-        division = request.POST.get('division')
-        industry_type = request.POST.get('industry_type')
-        business_description = request.POST.get('business_description')
-        trade_licence_no = request.POST.get('trade_licence_no')
+        if user:
+            token = generate_token()
+            Token.objects.create(user=user, token=token)
+            login(request, user)
+            return JsonResponse({"message": f"Login successfully for {user.username}"}, status=200)
+        else:
+            return JsonResponse({'message': 'Login failed'}, status=204)
 
-        # company info creation
-        company_info = CompanyInfo.objects.create(
-            company_name=company_name,
-            country=country,
-            division=division,
-            industry_type=industry_type,
-            business_description=business_description,
-            trade_licence_no=trade_licence_no,
-            user=user
-        )
+    def get(self, request):
+        token = request.headers['Token']
 
-        # return api response
-        return JsonResponse({'message': 'Employer successfully register done!'}, status=201)
+        if token:
+            matched_token = Token.objects.get(token=token)
+            matched_token.delete()
+            return JsonResponse({'message': 'Logout Successfully!'}, status=200)
+        else:
+            return JsonResponse({'message': 'Not Found!'}, status=404)
 
-    # if data not available
+
+@method_decorator(csrf_exempt, name='dispatch')
+def logout(request):
+    # getting token
+    token = request.headers['Token']
+
+    if token:
+        matched_token = Token.objects.get(token=token)
+        matched_token.delete()
+        return JsonResponse({'message': 'Logout Successfully!'}, status=200)
     else:
-        return JsonResponse({'message': 'Signup Failed!'}, status=404)
+        return JsonResponse({'message': 'Not Found!'}, status=404)
+
+
+# custom token generating
+def generate_token():
+    import time
+
+    return str(int(time.time()))
