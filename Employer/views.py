@@ -37,15 +37,15 @@ class EmployerRegistration(View):
         body = json.loads(body_unicode)
 
         user_form = UserFrom(body)
+        contact_form = ContactFrom(body['contact'])
+        company_info = CompanyInfoForm(body['company_info'])
 
-        if user_form.is_valid():
+        if user_form.is_valid() and contact_form.is_valid() and company_info.is_valid():
             user_instance = user_form.save()
 
-            contact_form = ContactFrom(body['contact'])
             contact_form.instance.user = user_instance
             contact_form.save()
 
-            company_info = CompanyInfoForm(body['company_info'])
             company_info.instance.user = user_instance
             company_info.save()
             return JsonResponse({'message': 'Registration Successful!'}, status=201)
