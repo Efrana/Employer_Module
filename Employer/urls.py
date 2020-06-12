@@ -11,9 +11,9 @@ from .views import (
 
 urlpatterns = [
 
-    # sign-up api
-    path('registration/', EmployerRegistration.as_view()),
-    path('registration-update/', EmployerRegistration.as_view()),
+  # sign-up api
+    path('employer/registration/', EmployerRegistration.as_view()),
+    path('employer/registration-update/<int:id>/', EmployerRegistration.as_view()),
     # login logout
     path('authentication/', Authentication.as_view()),
     # edit
