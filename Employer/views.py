@@ -58,26 +58,30 @@ class EmployerRegistration(View):
 class UpdateRegistration(View):
     @transaction.atomic
     def put(self, request, id=None):
-        body_unicode = request.body.decode('utf-8')
-        body = json.loads(body_unicode)
+        try:
+            body_unicode = request.body.decode('utf-8')
+            body = json.loads(body_unicode)
 
-        user = User.objects.get(id=id)
-        print(user)
-        user_form = UserFrom(body, instance=user)
+            user = User.objects.get(id=id)
+            print(user)
+            user_form = UserFrom(body, instance=user)
 
-        if user_form.is_valid():
-            user_ins = user_form.save()
+            if user_form.is_valid():
+                user_ins = user_form.save()
 
-            contact = get_object_or_404(Contact, user=user_ins)
-            contact_from = ContactFrom(body['contact'], instance=contact)
-            contact_from.save()
+                contact = get_object_or_404(Contact, user=user_ins)
+                contact_from = ContactFrom(body['contact'], instance=contact)
+                contact_from.save()
 
-            company_info = get_object_or_404(CompanyInfo, user=user_ins)
-            company_from = CompanyInfoForm(body['company_info'], instance=company_info)
-            company_from.save()
-            return JsonResponse({'message': 'Registration Successful Updated!'}, status=200)
-        else:
-            return JsonResponse({"errors": user_form.errors}, status=422)
+                company_info = get_object_or_404(CompanyInfo, user=user_ins)
+                company_from = CompanyInfoForm(body['company_info'], instance=company_info)
+                company_from.save()
+                return JsonResponse({'message': 'Registration Successful Updated!'}, status=200)
+        except User.DoesNotExist as e:
+            return JsonResponse({"message": e}, status=404)
+
+        # else:
+        #     return JsonResponse({"errors": user_form.errors}, status=422)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
