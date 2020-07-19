@@ -45,16 +45,16 @@ class Thana(models.Model):
         return self.name
 
 
-class IndustryTypeMaster(models.Model):
+class IndustryTypeMain(models.Model):
     name = models.CharField(max_length=200)
 
     def __str__(self):
         return self.name
 
 
-class IndustryTypeSlave(models.Model):
+class IndustryTypeSubordinate(models.Model):
     name = models.CharField(max_length=200)
-    industry_type_master = models.ForeignKey(IndustryTypeMaster, on_delete=models.CASCADE, null=True)
+    industry_type_main = models.ForeignKey(IndustryTypeMain, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.name
@@ -67,7 +67,7 @@ class CompanyInfo(models.Model):
     thana = models.ForeignKey(Thana, on_delete=models.CASCADE)
     address = models.TextField()
     b_address = models.TextField()
-    industry_type_slave = models.ManyToManyField(IndustryTypeSlave, null=True, blank=True)
+    industry_type_subordinate = models.ManyToManyField(IndustryTypeSubordinate, null=True, blank=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     business_description = models.TextField()
     licence_no = models.IntegerField()
@@ -79,8 +79,8 @@ class CompanyInfo(models.Model):
     def thana_name(self):
         return self.thana.name
 
-    def industry_type_slave_name(self):
-        return self.industry_type_slave.name
+    def industry_type_subordinate_name(self):
+        return self.industry_type_subordinate.name
 
-    def get_industry_type_slave(self):
-        return ",".join([str(p) for p in self.industry_type_slave.all()])
+    def get_industry_type_subordinate(self):
+        return ",".join([str(p) for p in self.industry_type_subordinate.all()])

@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterField(
             model_name='companyinfo',
-            name='industry_type_slave',
-            field=models.ManyToManyField(blank=True, null=True, to='Employer.IndustryTypeSlave'),
+            name='industry_type_subordinate',
+            field=models.ManyToManyField(blank=True, null=True, to='Employer.IndustryTypeSubordinate'),
         ),
     ]

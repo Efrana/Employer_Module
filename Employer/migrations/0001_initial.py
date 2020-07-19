@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='IndustryTypeMaster',
+            name='IndustryTypeMain',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=200)),
@@ -44,11 +44,11 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='IndustryTypeSlave',
+            name='IndustryTypeSubordinate',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=200)),
-                ('industry_type_master', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='Employer.IndustryTypeMaster')),
+                ('industry_type_main', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='Employer.IndustryTypeMain')),
             ],
         ),
         migrations.AddField(
@@ -79,7 +79,7 @@ class Migration(migrations.Migration):
                 ('business_description', models.TextField()),
                 ('licence_no', models.IntegerField()),
                 ('websiteurl', models.URLField(max_length=350)),
-                ('industry_type_slave', models.ManyToManyField(to='Employer.IndustryTypeSlave')),
+                ('industry_type_subordinate', models.ManyToManyField(to='Employer.IndustryTypeSubordinate')),
                 ('thana', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Employer.Thana')),
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
