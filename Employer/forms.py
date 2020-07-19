@@ -36,5 +36,5 @@ class CompanyInfoForm(forms.ModelForm):
     class Meta:
         model = CompanyInfo
         fields = ['name', 'b_name', 'country', 'thana', 'address', 'b_address', 'business_description',
-                  'industry_type_slave', 'licence_no', 'websiteurl']
+                  'industry_type_subordinate', 'licence_no', 'websiteurl']
         exclude = ['user']
